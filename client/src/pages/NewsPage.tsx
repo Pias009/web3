@@ -22,6 +22,7 @@ const NewsPage = () => {
     const fetchNews = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/news`);
+        console.log('News API Response Data:', response.data);
         setNewsItems(response.data);
       } catch (err) {
         setError("Failed to fetch news.");
