@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { auth } = require('../middleware/auth');
+const User = require('../models/User');
 
 const router = express.Router();
 
@@ -12,24 +13,21 @@ router.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Check if user exists
-    // For simplicity, let's assume a User model exists
-    // const user = await User.findOne({ username });
-    // if (user) {
-    //   return res.status(400).json({ msg: 'User already exists' });
-    // }
+    let user = await User.findOne({ username });
+    if (user) {
+      return res.status(400).json({ msg: 'User already exists' });
+    }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    user = new User({
+      username,
+      password
+    });
 
-    // Save user (mock for now)
-    const newUser = { username, password: hashedPassword }; // Replace with actual User model save
+    await user.save();
 
-    // Generate JWT
     const payload = {
       user: {
-        id: 'mockUserId' // Replace with actual user ID from DB
+        id: user.id
       }
     };
 
@@ -56,22 +54,19 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Check if user exists
-    // const user = await User.findOne({ username });
-    // if (!user) {
-    //   return res.status(400).json({ msg: 'Invalid Credentials' });
-    // }
+    let user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ msg: 'Invalid Credentials' });
+    }
 
-    // Compare password
-    // const isMatch = await bcrypt.compare(password, user.password);
-    // if (!isMatch) {
-    //   return res.status(400).json({ msg: 'Invalid Credentials' });
-    // }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Invalid Credentials' });
+    }
 
-    // Generate JWT (mock for now)
     const payload = {
       user: {
-        id: 'mockUserId' // Replace with actual user ID from DB
+        id: user.id
       }
     };
 
@@ -96,8 +91,8 @@ router.post('/login', async (req, res) => {
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    // const user = await User.findById(req.user.id).select('-password');
-    res.json({ msg: 'Authenticated user data (mock)' });
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
