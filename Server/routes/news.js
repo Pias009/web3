@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
     const news = await News.find();
     res.json(news);
   } catch (err) {
-    console.error(err.message);
+    console.error('Error fetching news:', err.message);
     res.status(500).send('Server Error');
   }
 });
