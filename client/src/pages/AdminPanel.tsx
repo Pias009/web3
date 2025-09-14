@@ -33,7 +33,7 @@ const AdminPanel: React.FC = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/news', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/news`, formData, {
         headers: {
           'x-auth-token': token,
           'Content-Type': 'multipart/form-data',
@@ -61,7 +61,7 @@ const AdminPanel: React.FC = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/projects', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/projects`, formData, {
         headers: {
           'x-auth-token': token,
           'Content-Type': 'multipart/form-data',
