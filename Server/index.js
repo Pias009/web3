@@ -9,7 +9,14 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors({ origin: 'http://subof.neonecy.com' }));
+const clientUrl = process.env.CLIENT_URL;
+
+if (!clientUrl) {
+    console.error("CLIENT_URL is not defined in .env file");
+    process.exit(1);
+}
+
+app.use(cors({ origin: clientUrl }));
 app.use(express.json());
 app.use('/api/uploads', express.static('public/uploads'));
 
